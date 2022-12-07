@@ -1,0 +1,36 @@
+This module assumes the existence of a Person content type (entity type with bundle 'person'),
+containing fields with the following machine names and types in which to store LDAP information:
+
+	* field_uva_ldap_affiliation : Text (plain); Unlimited
+	* field_uva_ldap_department : Text (plain); Unlimited
+	* field_uva_ldap_description : Text (plain); Unlimited
+	* field_uva_ldap_display_name : Text (plain); Limit 1
+	* field_uva_ldap_email : Email; Limit 1
+	* field_uva_ldap_first_name : Text (plain); Limit 1
+	* field_uva_ldap_id : Text (plain); Limit 1
+	* field_uva_ldap_initials : Text (plain); Limit 1
+	* field_uva_ldap_last_name : Text (plain); Limit 1
+	* field_uva_ldap_office : Text (plain); Unlimited
+	* field_uva_ldap_phone : Telephone number; Unlimited
+	* field_uva_ldap_private : Boolean; Limit 1
+	* field_uva_ldap_response : Text (plain, long); Limit 1
+	* field_uva_ldap_title : Text (plain); Unlimited
+
+Additionally, it expects the following field to exist and contain the person's UVA Computing ID:
+
+	* field_computing_id
+
+Every time a Person is saved in Drupal, this module will query UVA LDAP for information on
+the user with the computing ID contained in field_computing_id.  If the query is successful,
+ALL of the field_uva_ldap_* fields will be overwritten with the new information.  Also, the
+Full Name (what the title field is labeled in Drupal) will be updated with the value of
+field_uva_ldap_display_name, if it exists.
+
+NOTES:
+
+	* field_uva_ldap_response is for debugging purposes only; it should not be displayed
+
+	* field_uva_ldap_private corresponds to the "uvRestrict" LDAP attribute, which if true,
+	  means "Don't display information on this person".  Taken from here (NetBadge required):
+
+		https://virginia.service-now.com/its/?id=itsweb_kb_article&sys_id=770cb59adb3093c44f32fb671d96199d

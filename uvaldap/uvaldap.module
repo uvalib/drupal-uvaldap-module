@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for uvaldap module.
+ */
+
+/**
+ * Implements hook_entity_presave() to augment certain entity types (e.g. Person).
+ */
+function uvaldap_entity_presave($entity) {
+  // get computing ID for any bundle types we handle
+
+  switch ($entity->bundle()) {
+
+  // Person content type
+  case 'person':
+    $computingID = $entity->get('field_computing_id')->value;
+    break;
+
+/*
+  // Drupal user account
+  case 'user':
+    $computingID = $entity->label();
+    break;
+*/
+
+  // no match; ignore this entity
+  default:
+    return;
+  }
+
+  // attempt to update this entity with LDAP information for the associated computing ID
+  try {
+    \Drupal\uvaldap\UserInformationService::getInstance()->updateEntity($entity, $computingID);
+    \Drupal::logger('uvaldap')->info('[@user] Successfully updated user info from LDAP', ['@user' => $computingID]);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('uvaldap')->error('[@user] Failed to update user info from LDAP: @reason', ['@user' => $computingID, '@reason' => $e->getMessage()]);
+  }
+}

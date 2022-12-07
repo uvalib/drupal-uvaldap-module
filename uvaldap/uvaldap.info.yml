@@ -1,0 +1,5 @@
+name: UVA LDAP
+type: module
+description: Updates Person entity types with information from UVA LDAP whenever they are saved.
+package: Custom
+core_version_requirement: ^9 || ^10
