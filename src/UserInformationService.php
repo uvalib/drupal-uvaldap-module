@@ -5,8 +5,8 @@ namespace Drupal\uvaldap;
 class UserInformationService {
 
   protected static $instance = NULL;
-  //protected const SERVICE_URL = "http://user-ws-production.private.production:8080";
-  protected const SERVICE_URL = "http://user-ws-staging.private.staging:8080";
+  protected const SERVICE_URL = "http://user-ws-production.private.production:8080";
+  //protected const SERVICE_URL = "http://user-ws-staging.private.staging:8080";
   private $tokenService = NULL;
 
   protected function __construct() {

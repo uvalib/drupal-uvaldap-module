@@ -5,8 +5,8 @@ namespace Drupal\uvaldap;
 class MintTokenService {
 
   protected static $instance = NULL;
-  //protected const SERVICE_URL = "http://mint-token-ws-production.private.production:8080";
-  protected const SERVICE_URL = "http://mint-token-ws-staging.private.staging:8080";
+  protected const SERVICE_URL = "http://mint-token-ws-production.private.production:8080";
+  //protected const SERVICE_URL = "http://mint-token-ws-staging.private.staging:8080";
   private $authToken = NULL;
 
   protected function __construct() {}
