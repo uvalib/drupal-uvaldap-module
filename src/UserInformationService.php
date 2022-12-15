@@ -5,11 +5,12 @@ namespace Drupal\uvaldap;
 class UserInformationService {
 
   protected static $instance = NULL;
-  protected const SERVICE_URL = "http://user-ws-production.private.production:8080";
-  //protected const SERVICE_URL = "http://user-ws-staging.private.staging:8080";
+  protected $serviceURL = "";
   private $tokenService = NULL;
 
   protected function __construct() {
+    $this->serviceURL = getenv('USER_WS_URL') ?: "http://user-ws-production.private.production:8080";
+
     $this->tokenService = \Drupal\uvaldap\MintTokenService::getInstance();
   }
 
@@ -23,7 +24,7 @@ class UserInformationService {
   private function getUserInfo($computingID) {
     $ch = curl_init();
 
-    $endpoint = self::SERVICE_URL . "/user/" . $computingID;
+    $endpoint = $this->serviceURL . "/user/" . $computingID;
     $params = array('auth' => $this->tokenService->getToken());
     $url = $endpoint . '?' . http_build_query($params);
 

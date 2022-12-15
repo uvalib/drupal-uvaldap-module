@@ -5,11 +5,12 @@ namespace Drupal\uvaldap;
 class MintTokenService {
 
   protected static $instance = NULL;
-  protected const SERVICE_URL = "http://mint-token-ws-production.private.production:8080";
-  //protected const SERVICE_URL = "http://mint-token-ws-staging.private.staging:8080";
+  protected $serviceURL = "";
   private $authToken = NULL;
 
-  protected function __construct() {}
+  protected function __construct() {
+    $this->serviceURL = getenv('MINT_TOKEN_WS_URL') ?: "http://mint-token-ws-production.private.production:8080";
+  }
 
   public static function getInstance() {
     if (!isset(static::$instance)) {
@@ -21,7 +22,7 @@ class MintTokenService {
   private function mintToken() {
     $ch = curl_init();
 
-    $endpoint = self::SERVICE_URL . "/mint";
+    $endpoint = $this->serviceURL . "/mint";
     $url = $endpoint;
 
     curl_setopt($ch, CURLOPT_URL, $url);
