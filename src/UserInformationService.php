@@ -9,8 +9,6 @@ class UserInformationService {
   private $tokenService = NULL;
 
   protected function __construct() {
-    $this->serviceURL = getenv('USER_WS_URL') ?: "http://user-ws-production.private.production:8080";
-
     $this->tokenService = \Drupal\uvaldap\MintTokenService::getInstance();
   }
 
@@ -21,10 +19,37 @@ class UserInformationService {
     return static::$instance;
   }
 
+  private function getServiceURL() {
+    if (!empty($this->serviceURL)) {
+      return $this->serviceURL;
+    }
+
+    // check environment for URL
+    $url = getenv('USER_WS_URL');
+
+    if (empty($url)) {
+      // URL not found in environment; attempt to divine it
+      // based on URL structure in mysql host variable
+      $host = getenv('MYSQL_HOST');
+
+      if (!empty($host) && str_contains($host, "-staging")) {
+        // looks like we're in staging
+        $url = "http://user-ws-staging.private.staging:8080";
+      } else {
+        // default to production to be safe
+        $url = "http://user-ws-production.private.production:8080";
+      }
+    }
+
+    $this->serviceURL = $url;
+
+    return $this->serviceURL;
+  }
+
   private function getUserInfo($computingID) {
     $ch = curl_init();
 
-    $endpoint = $this->serviceURL . "/user/" . $computingID;
+    $endpoint = $this->getServiceURL() . "/user/" . $computingID;
     $params = array('auth' => $this->tokenService->getToken());
     $url = $endpoint . '?' . http_build_query($params);
 

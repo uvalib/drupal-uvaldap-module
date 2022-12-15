@@ -8,9 +8,7 @@ class MintTokenService {
   protected $serviceURL = "";
   private $authToken = NULL;
 
-  protected function __construct() {
-    $this->serviceURL = getenv('MINT_TOKEN_WS_URL') ?: "http://mint-token-ws-production.private.production:8080";
-  }
+  protected function __construct() {}
 
   public static function getInstance() {
     if (!isset(static::$instance)) {
@@ -19,10 +17,37 @@ class MintTokenService {
     return static::$instance;
   }
 
+  private function getServiceURL() {
+    if (!empty($this->serviceURL)) {
+      return $this->serviceURL;
+    }
+
+    // check environment for URL
+    $url = getenv('MINT_TOKEN_WS_URL');
+
+    if (empty($url)) {
+      // URL not found in environment; attempt to divine it
+      // based on URL structure in mysql host variable
+      $host = getenv('MYSQL_HOST');
+
+      if (!empty($host) && str_contains($host, "-staging")) {
+        // looks like we're in staging
+        $url = "http://mint-token-ws-staging.private.staging:8080";
+      } else {
+        // default to production to be safe
+        $url = "http://mint-token-ws-production.private.production:8080";
+      }
+    }
+
+    $this->serviceURL = $url;
+
+    return $this->serviceURL;
+  }
+
   private function mintToken() {
     $ch = curl_init();
 
-    $endpoint = $this->serviceURL . "/mint";
+    $endpoint = $this->getServiceURL() . "/mint";
     $url = $endpoint;
 
     curl_setopt($ch, CURLOPT_URL, $url);
